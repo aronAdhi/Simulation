@@ -1,7 +1,7 @@
 # main.py
 
 import pygame
-import matplotlib.pyplot as plt  # Import matplotlib for plotting
+import matplotlib.pyplot as plt
 from screen_config import WIDTH, HEIGHT, BLACK
 from dot import Dot
 from box import Box
@@ -17,12 +17,10 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Dots and Boxes Simulation')
 
 # Create dots and boxes
-num_dots = 10
-num_boxes = 10
-max_dot_age = 200
-hunger_threshold = 200
-dots = [Dot(radius=5, color=(255, 0, 0), speed=5) for _ in range(num_dots)]
-boxes = [Box(width=10, color=(0, 255, 0), speed=3) for _ in range(num_boxes)]
+num_dots = 5
+num_boxes = 0
+dots = [Dot(radius=5, color=(255, 0, 0), speed=2) for _ in range(num_dots)]
+boxes = [Box(width=10, color=(0, 255, 0), speed=1.5) for _ in range(num_boxes)]
 
 # Trackers for the number of dots and boxes per frame
 dots_count = []
@@ -30,6 +28,10 @@ boxes_count = []
 
 # Font for displaying counts
 font = pygame.font.SysFont('Arial', 24)
+
+# Simulation parameters
+max_dot_age = 600  # Dots die after 600 frames (20 seconds at 30 FPS)
+hunger_threshold = 300  # Boxes perish after 300 frames without eating (10 seconds at 30 FPS)
 
 # Simulation loop
 running = True
@@ -48,15 +50,15 @@ while running:
 
     # Record the number of dots and boxes
     dots_count.append(len(dots))
-    boxes_count.append(len(boxes))  # This will typically remain constant if boxes aren't removed
+    boxes_count.append(len(boxes))
 
     # Render the text for counts
     dots_text = font.render(f'Dots: {len(dots)}', True, (255, 255, 255))
     boxes_text = font.render(f'Boxes: {len(boxes)}', True, (255, 255, 255))
 
     # Blit the text on the screen
-    screen.blit(dots_text, (10, 10))  # Position the text at the top-left corner
-    screen.blit(boxes_text, (10, 40))  # Position below the dots count text
+    screen.blit(dots_text, (10, 10))
+    screen.blit(boxes_text, (10, 40))
 
     # Update display
     pygame.display.flip()
