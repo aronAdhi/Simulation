@@ -17,8 +17,8 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Dots and Boxes Simulation')
 
 # Create dots and boxes
-num_dots = 10
-num_boxes = 10
+num_dots = 100
+num_boxes = 1
 dots = [Dot(radius=5, color=(255, 0, 0), speed=2) for _ in range(num_dots)]
 boxes = [Box(width=10, color=(0, 255, 0), speed=1.5) for _ in range(num_boxes)]
 
@@ -30,8 +30,10 @@ boxes_count = []
 font = pygame.font.SysFont('Arial', 24)
 
 # Simulation parameters
-max_dot_age = 600  # Dots die after 600 frames (20 seconds at 30 FPS)
-hunger_threshold = 300  # Boxes perish after 300 frames without eating (10 seconds at 30 FPS)
+max_dot_age = 1000  # Dots die after 600 frames (20 seconds at 30 FPS)
+max_box_age = 600 
+hunger_threshold = 190  # Boxes perish after 300 frames without eating (10 seconds at 30 FPS)
+
 
 # Simulation loop
 running = True
@@ -46,7 +48,7 @@ while running:
     screen.fill(BLACK)
 
     # Run the simulation step
-    utility.run_simulation_step(screen, dots, boxes, dot_logic, box_logic, max_dot_age, hunger_threshold)
+    utility.run_simulation_step(screen, dots, boxes, dot_logic, box_logic, max_dot_age, max_box_age, hunger_threshold)
 
     # Record the number of dots and boxes
     dots_count.append(len(dots))

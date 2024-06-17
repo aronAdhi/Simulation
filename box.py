@@ -1,21 +1,38 @@
 # box.py
 
-import pygame
 import random
 import math
+import pygame
 
 class Box:
-    def __init__(self, width, color, speed):
+    def __init__(self, width, color, speed, cooldown_frames=60):
         self.width = width
         self.color = color
         self.speed = speed
         self.position = [random.randint(0, 800), random.randint(0, 600)]
         self.direction = random.uniform(0, 2 * math.pi)
         self.hunger = 0  # Initialize hunger attribute
-        self.fov_radius = 100  # Field of view radius
+        self.age = 0  # Initialize age attribute
+        self.reproduction_count = 0  # Initialize reproduction count
+        self.fov_radius = 50  # Field of view radius
+        self.cooldown_frames = cooldown_frames  # Cooldown period for random movement
 
-    def move(self):
-        # Move the box in its current direction
+    def move(self, change_interval, dots):
+        if self.cooldown_frames > 0:
+            # Move randomly during the cooldown period
+            if random.randint(0, change_interval) == 0:
+                self.direction += random.uniform(-0.2, 0.2)
+            self.cooldown_frames -= 1
+        else:
+            # Start hunting behavior after the cooldown period
+            if dots:
+                closest_dot = min(dots, key=lambda d: self.distance_to(d))
+                self.chase_dot(closest_dot)
+            else:
+                # If no dots, move randomly
+                if random.randint(0, change_interval) == 0:
+                    self.direction += random.uniform(-0.2, 0.2)
+
         self.position[0] += self.speed * math.cos(self.direction)
         self.position[1] += self.speed * math.sin(self.direction)
         self.bounce_on_edges()
@@ -28,27 +45,33 @@ class Box:
             self.direction = -self.direction
 
     def draw(self, screen):
-        pygame.draw.rect(screen, self.color, (self.position[0], self.position[1], self.width, self.width))
-        # Draw the field of view
-        pygame.draw.circle(screen, (255, 255, 255), (int(self.position[0]), int(self.position[1])), self.fov_radius, 1)
+        pygame.draw.rect(screen, self.color, (int(self.position[0]), int(self.position[1]), self.width, self.width))
+        # Draw field of view as a circle around the box
+        pygame.draw.circle(screen, (255, 255, 255), (int(self.position[0] + self.width / 2), int(self.position[1] + self.width / 2)), 100, 1)
+
+    def age_and_check(self, max_age):
+        self.age += 1
+        return self.age > max_age  # Returns True if age exceeds max_age
+
+    def reproduce(self, boxes, max_reproductions):
+        if self.reproduction_count < max_reproductions:
+            # Create a new box at the same position with random initial properties
+            new_box = Box(width=self.width, color=self.color, speed=self.speed)
+            new_box.position = self.position[:]
+            boxes.append(new_box)
+            self.reproduction_count += 1
+
+    def reset_hunger(self):
+        self.hunger = 0
 
     def update_hunger_and_check(self, hunger_threshold):
         self.hunger += 1
         return self.hunger > hunger_threshold  # Returns True if hunger exceeds threshold
 
-    def reset_hunger(self):
-        self.hunger = 0  # Resets hunger when a dot is eaten
+    def chase_dot(self, dot):
+        # Calculate the angle towards the dot
+        angle_to_dot = math.atan2(dot.position[1] - self.position[1], dot.position[0] - self.position[0])
+        self.direction = angle_to_dot  # Directly set direction to the angle of the dot
 
-    def chase_dot(self, dots):
-        nearest_dot = None
-        min_distance = float('inf')
-
-        for dot in dots:
-            distance = math.sqrt((self.position[0] - dot.position[0]) ** 2 + (self.position[1] - dot.position[1]) ** 2)
-            if distance < min_distance and distance < self.fov_radius:
-                nearest_dot = dot
-                min_distance = distance
-
-        if nearest_dot:
-            angle_to_dot = math.atan2(nearest_dot.position[1] - self.position[1], nearest_dot.position[0] - self.position[0])
-            self.direction = angle_to_dot  # Chase towards the nearest dot
+    def distance_to(self, dot):
+        return math.sqrt((self.position[0] - dot.position[0]) ** 2 + (self.position[1] - dot.position[1]) ** 2)

@@ -1,6 +1,6 @@
 # utility.py
 
-def run_simulation_step(screen, dots, boxes, dot_logic, box_logic, max_dot_age, hunger_threshold):
+def run_simulation_step(screen, dots, boxes, dot_logic, box_logic, max_dot_age, max_box_age, hunger_threshold):
     """Run a single step of the simulation, moving and drawing all elements."""
     # Move and draw all dots
     dot_logic.move_dots(dots, change_interval=30)
@@ -23,11 +23,22 @@ def run_simulation_step(screen, dots, boxes, dot_logic, box_logic, max_dot_age, 
             if dot.age == max_dot_age // 3 or dot.age == 2 * max_dot_age // 3:
                 dot.reproduce(dots, max_reproductions=2)
 
-    # Check hunger and collisions for each box
+    # Check age of each box and reproduction
     for box in boxes:
+        if box.age_and_check(max_box_age):
+            boxes_to_remove.append(box)
+        else:
+            # Reproduce at 1/3 and 2/3 of the lifespan
+            if box.age == max_box_age // 3 or box.age == 2 * max_box_age // 3:
+                box.reproduce(boxes, max_reproductions=2)
+
+        box.move(change_interval=30, dots=dots)        
+        
+        # Check hunger status
         hungry = box.update_hunger_and_check(hunger_threshold)
         if hungry:
             boxes_to_remove.append(box)
+        
         for dot in dots:
             if dot.collide_with_box(box):
                 dots_to_remove.append(dot)
