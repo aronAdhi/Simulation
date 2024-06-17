@@ -14,10 +14,14 @@ def run_simulation_step(screen, dots, boxes, dot_logic, box_logic, max_dot_age, 
     dots_to_remove = []
     boxes_to_remove = []
 
-    # Check age of each dot
+    # Check age of each dot and reproduction
     for dot in dots:
         if dot.age_and_check(max_dot_age):
             dots_to_remove.append(dot)
+        else:
+            # Reproduce at 1/3 and 2/3 of the lifespan
+            if dot.age == max_dot_age // 3 or dot.age == 2 * max_dot_age // 3:
+                dot.reproduce(dots, max_reproductions=2)
 
     # Check hunger and collisions for each box
     for box in boxes:

@@ -1,8 +1,8 @@
 # dot.py
-
 import pygame
 import random
 import math
+
 
 class Dot:
     def __init__(self, radius, color, speed):
@@ -12,6 +12,7 @@ class Dot:
         self.position = [random.randint(0, 800), random.randint(0, 600)]
         self.direction = random.uniform(0, 2 * math.pi)
         self.age = 0  # Initialize age attribute
+        self.reproduction_count = 0  # Initialize reproduction count
 
     def move(self, change_interval):
         # Randomly change direction
@@ -38,3 +39,11 @@ class Dot:
     def collide_with_box(self, box):
         distance = math.sqrt((self.position[0] - box.position[0]) ** 2 + (self.position[1] - box.position[1]) ** 2)
         return distance < self.radius + box.width / 2
+
+    def reproduce(self, dots, max_reproductions):
+        if self.reproduction_count < max_reproductions:
+            # Create a new dot at the same position with random initial properties
+            new_dot = Dot(radius=self.radius, color=self.color, speed=self.speed)
+            new_dot.position = self.position[:]
+            dots.append(new_dot)
+            self.reproduction_count += 1

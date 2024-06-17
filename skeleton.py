@@ -17,8 +17,8 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Dots and Boxes Simulation')
 
 # Create dots and boxes
-num_dots = 5
-num_boxes = 0
+num_dots = 10
+num_boxes = 10
 dots = [Dot(radius=5, color=(255, 0, 0), speed=2) for _ in range(num_dots)]
 boxes = [Box(width=10, color=(0, 255, 0), speed=1.5) for _ in range(num_boxes)]
 
