@@ -3,13 +3,14 @@
 import random
 import math
 import pygame
+from screen_config import *
 
 class Box:
     def __init__(self, width, color, speed, cooldown_frames=60):
         self.width = width
         self.color = color
         self.speed = speed
-        self.position = [random.randint(0, 800), random.randint(0, 600)]
+        self.position = [random.randint(0, WIDTH), random.randint(0, HEIGHT)]
         self.direction = random.uniform(0, 2 * math.pi)
         self.hunger = 0  # Initialize hunger attribute
         self.age = 0  # Initialize age attribute
@@ -45,7 +46,32 @@ class Box:
             self.direction = -self.direction
 
     def draw(self, screen):
-        pygame.draw.rect(screen, self.color, (int(self.position[0]), int(self.position[1]), self.width, self.width))
+        # pygame.draw.rect(screen, self.color, (int(self.position[0]), int(self.position[1]), self.width, self.width))
+        
+        # angle = math.atan2(self.velocity[1], self.velocity[0])
+        angle = self.direction
+        
+        # Length of each side of the triangle
+        size = self.width
+        
+        # Calculate the vertices of the triangle
+        tip = (
+            self.position[0] + math.cos(angle) * size,
+            self.position[1] + math.sin(angle) * size
+        )
+        left = (
+            self.position[0] + math.cos(angle + 5 * math.pi / 6) * size,
+            self.position[1] + math.sin(angle + 5 * math.pi / 6) * size
+        )
+        right = (
+            self.position[0] + math.cos(angle - 2.5 * math.pi / 3) * size,
+            self.position[1] + math.sin(angle - 2.5 * math.pi / 3) * size
+        )
+        
+        # Draw the triangle
+        pygame.draw.polygon(screen, self.color, [tip, left, right])
+
+
         # Draw field of view as a circle around the box
         pygame.draw.circle(screen, (255, 255, 255), (int(self.position[0] + self.width / 2), int(self.position[1] + self.width / 2)), 100, 1)
 

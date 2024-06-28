@@ -2,7 +2,7 @@
 
 import pygame
 import matplotlib.pyplot as plt
-from screen_config import WIDTH, HEIGHT, BLACK
+from screen_config import *
 from dot import Dot
 from box import Box
 import dot_logic
@@ -17,23 +17,14 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Dots and Boxes Simulation')
 
 # Create dots and boxes
-num_dots = 100
-num_boxes = 1
-dots = [Dot(radius=5, color=(255, 0, 0), speed=2) for _ in range(num_dots)]
-boxes = [Box(width=10, color=(0, 255, 0), speed=1.5) for _ in range(num_boxes)]
+dots = [Dot(radius, color=dot_color, speed=dot_speed) for _ in range(num_dots)]
+boxes = [Box(width, color=box_color, speed=box_speed) for _ in range(num_boxes)]
 
 # Trackers for the number of dots and boxes per frame
 dots_count = []
 boxes_count = []
 
-# Font for displaying counts
 font = pygame.font.SysFont('Arial', 24)
-
-# Simulation parameters
-max_dot_age = 1000  # Dots die after 600 frames (20 seconds at 30 FPS)
-max_box_age = 600 
-hunger_threshold = 190  # Boxes perish after 300 frames without eating (10 seconds at 30 FPS)
-
 
 # Simulation loop
 running = True
@@ -64,7 +55,7 @@ while running:
 
     # Update display
     pygame.display.flip()
-    clock.tick(30)  # Limit to 30 frames per second
+    clock.tick(FPS)  # Limit to 30 frames per second
 
 # Quit Pygame
 pygame.quit()
@@ -79,3 +70,5 @@ plt.title('Number of Dots and Boxes Over Time')
 plt.legend()
 plt.grid(True)
 plt.show()
+
+
